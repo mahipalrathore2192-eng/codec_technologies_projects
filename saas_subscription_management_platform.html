@@ -1,0 +1,571 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:600px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-tertiary)}
+.sidebar{background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;padding:0}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;border-radius:8px;background:#185FA5;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-text{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.logo-sub{font-size:11px;color:var(--color-text-secondary)}
+.nav{padding:12px 0;flex:1}
+.nav-section{padding:6px 16px 4px;font-size:10px;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13px;color:var(--color-text-secondary);cursor:pointer;transition:background .12s;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nav-item.active{background:var(--color-background-info);color:#185FA5;font-weight:500}
+.nav-item i{font-size:16px;width:18px}
+.nav-badge{margin-left:auto;font-size:10px;background:var(--color-background-danger);color:var(--color-text-danger);padding:1px 6px;border-radius:10px;font-weight:500}
+.sidebar-footer{padding:14px 16px;border-top:0.5px solid var(--color-border-tertiary)}
+.user-row{display:flex;align-items:center;gap:10px}
+.avatar{width:30px;height:30px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
+.user-info p{font-size:13px;color:var(--color-text-primary);font-weight:500}
+.user-info span{font-size:11px;color:var(--color-text-secondary)}
+.main{overflow:hidden;display:flex;flex-direction:column}
+.topbar{padding:16px 24px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.topbar-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-primary);font-family:var(--font-sans);transition:background .12s}
+.btn:hover{background:var(--color-background-secondary)}
+.btn-primary{background:#185FA5;border-color:#185FA5;color:#fff}
+.btn-primary:hover{background:#0C447C}
+.content{flex:1;overflow:auto;padding:20px 24px}
+.panel{display:none}
+.panel.active{display:block}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px}
+.metric-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.metric-value{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.metric-delta{font-size:11px;margin-top:4px}
+.metric-delta.up{color:var(--color-text-success)}
+.metric-delta.down{color:var(--color-text-danger)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.card-link{font-size:12px;color:#185FA5;cursor:pointer;border:none;background:none;font-family:var(--font-sans)}
+.full-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;color:var(--color-text-secondary);font-weight:500;padding:0 10px 10px 0;letter-spacing:.04em;text-transform:uppercase;border-bottom:0.5px solid var(--color-border-tertiary)}
+td{padding:11px 10px 11px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-success{background:var(--color-background-success);color:var(--color-text-success)}
+.badge-warning{background:var(--color-background-warning);color:var(--color-text-warning)}
+.badge-danger{background:var(--color-background-danger);color:var(--color-text-danger)}
+.badge-info{background:var(--color-background-info);color:var(--color-text-info)}
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.plan-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:18px;position:relative}
+.plan-card.featured{border:2px solid #185FA5}
+.plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:10px;padding:2px 10px;border-radius:10px;font-weight:500;white-space:nowrap}
+.plan-name{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.plan-price{font-size:26px;font-weight:500;color:var(--color-text-primary);margin:10px 0 4px}
+.plan-price span{font-size:13px;color:var(--color-text-secondary);font-weight:400}
+.plan-desc{font-size:12px;color:var(--color-text-secondary);margin-bottom:14px}
+.plan-features{list-style:none;font-size:12px;color:var(--color-text-secondary);margin-bottom:16px}
+.plan-features li{padding:4px 0;display:flex;align-items:center;gap:7px}
+.plan-features li i{color:#1D9E75;font-size:14px}
+.plan-subs{font-size:12px;color:var(--color-text-secondary);padding-top:12px;border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.plan-subs strong{color:var(--color-text-primary)}
+.sub-bar{height:4px;background:var(--color-background-secondary);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.sub-bar-fill{height:100%;border-radius:2px;background:#185FA5}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ai-blue{background:var(--color-background-info);color:#185FA5}
+.ai-green{background:var(--color-background-success);color:var(--color-text-success)}
+.ai-amber{background:var(--color-background-warning);color:var(--color-text-warning)}
+.ai-red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.activity-text{flex:1;font-size:13px;color:var(--color-text-primary)}
+.activity-text span{color:var(--color-text-secondary);font-size:11px;display:block;margin-top:2px}
+.analytics-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:16px}
+.usage-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.usage-item{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px}
+.usage-item-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:8px;display:flex;justify-content:space-between}
+.usage-bar{height:6px;background:var(--color-background-primary);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.usage-bar-fill{height:100%;border-radius:3px}
+.usage-pct{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.roles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.role-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px}
+.role-name{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.role-count{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.role-perms{font-size:11px;color:var(--color-text-secondary)}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:7px 12px;font-size:13px;color:var(--color-text-secondary);margin-bottom:14px}
+.filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;border:0.5px solid var(--color-border-secondary);background:none;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.filter-chip.active{background:var(--color-background-info);border-color:#185FA5;color:#185FA5;font-weight:500}
+.empty{text-align:center;padding:40px;color:var(--color-text-secondary);font-size:13px}
+</style>
+
+<h2 class="sr-only">SaaS Subscription Management Platform — admin dashboard with billing, plans, analytics, and team management.</h2>
+
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark"><i class="ti ti-bolt" aria-hidden="true"></i></div>
+      <div>
+        <div class="logo-text">SubFlow</div>
+        <div class="logo-sub">Subscription Platform</div>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="nav-section">Overview</div>
+      <button class="nav-item active" onclick="show('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</button>
+      <button class="nav-item" onclick="show('analytics',this)"><i class="ti ti-chart-line" aria-hidden="true"></i>Analytics</button>
+      <div class="nav-section" style="margin-top:8px">Billing</div>
+      <button class="nav-item" onclick="show('plans',this)"><i class="ti ti-layers" aria-hidden="true"></i>Plans & Pricing</button>
+      <button class="nav-item" onclick="show('subscribers',this)"><i class="ti ti-users" aria-hidden="true"></i>Subscribers<span class="nav-badge">1,284</span></button>
+      <button class="nav-item" onclick="show('invoices',this)"><i class="ti ti-receipt" aria-hidden="true"></i>Invoices</button>
+      <div class="nav-section" style="margin-top:8px">Admin</div>
+      <button class="nav-item" onclick="show('roles',this)"><i class="ti ti-shield-check" aria-hidden="true"></i>Roles & Access</button>
+      <button class="nav-item" onclick="show('settings',this)"><i class="ti ti-settings" aria-hidden="true"></i>Settings</button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="avatar">AR</div>
+        <div class="user-info">
+          <p>Alex Rivera</p>
+          <span>Super Admin</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="page-title">Dashboard</div>
+        <div class="topbar-sub" id="page-sub">June 2026 · All plans</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn"><i class="ti ti-download" aria-hidden="true"></i>Export</button>
+        <button class="btn btn-primary" onclick="sendPrompt('How do I add a new subscription plan to SubFlow?')"><i class="ti ti-plus" aria-hidden="true"></i>New plan ↗</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label"><i class="ti ti-currency-dollar" style="font-size:13px" aria-hidden="true"></i>Monthly Revenue</div>
+            <div class="metric-value">$84,320</div>
+            <div class="metric-delta up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i> +12.4% vs last month</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label"><i class="ti ti-users" style="font-size:13px" aria-hidden="true"></i>Active Subscribers</div>
+            <div class="metric-value">1,284</div>
+            <div class="metric-delta up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i> +87 this month</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label"><i class="ti ti-rotate" style="font-size:13px" aria-hidden="true"></i>Churn Rate</div>
+            <div class="metric-value">2.1%</div>
+            <div class="metric-delta up"><i class="ti ti-trending-down" style="font-size:11px" aria-hidden="true"></i> −0.4% vs last month</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label"><i class="ti ti-receipt" style="font-size:13px" aria-hidden="true"></i>Overdue Invoices</div>
+            <div class="metric-value">14</div>
+            <div class="metric-delta down"><i class="ti ti-alert-circle" style="font-size:11px" aria-hidden="true"></i> $6,820 at risk</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Revenue trend (MRR)</div>
+              <button class="card-link" onclick="sendPrompt('Show me a deeper breakdown of MRR growth by plan for SubFlow ↗')">Drill down ↗</button>
+            </div>
+            <div style="position:relative;height:180px">
+              <canvas id="mrrChart" role="img" aria-label="Line chart showing monthly recurring revenue from January to June 2026, rising from $61k to $84k.">MRR Jan $61k, Feb $65k, Mar $71k, Apr $75k, May $79k, Jun $84k.</canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Revenue by plan</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;font-size:11px;color:var(--color-text-secondary)">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#185FA5;display:inline-block"></span>Pro 54%</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block"></span>Starter 28%</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#533AB7;display:inline-block" ></span>Enterprise 18%</span>
+            </div>
+            <div style="position:relative;height:145px">
+              <canvas id="planChart" role="img" aria-label="Donut chart showing revenue split: Pro plan 54%, Starter 28%, Enterprise 18%.">Pro 54%, Starter 28%, Enterprise 18%.</canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="full-card">
+          <div class="card-head">
+            <div class="card-title">Recent activity</div>
+            <button class="card-link" onclick="show('invoices',document.querySelector('.nav-item:nth-child(7)'))">View all</button>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon ai-green"><i class="ti ti-check" aria-hidden="true"></i></div>
+            <div class="activity-text">Priya Sharma upgraded to <strong>Pro plan</strong><span>2 minutes ago · $79/mo</span></div>
+            <div class="badge badge-success">Paid</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon ai-blue"><i class="ti ti-user-plus" aria-hidden="true"></i></div>
+            <div class="activity-text">New subscriber: <strong>DataNest Inc.</strong> → Enterprise<span>18 minutes ago · $349/mo</span></div>
+            <div class="badge badge-info">New</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon ai-amber"><i class="ti ti-alert-triangle" aria-hidden="true"></i></div>
+            <div class="activity-text">Payment failed for <strong>Marcus O.</strong> — card declined<span>1 hour ago · Retry scheduled</span></div>
+            <div class="badge badge-warning">Retry</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon ai-red"><i class="ti ti-x" aria-hidden="true"></i></div>
+            <div class="activity-text"><strong>Lena Park</strong> cancelled Starter subscription<span>3 hours ago · Feedback: switching tools</span></div>
+            <div class="badge badge-danger">Churned</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon ai-green"><i class="ti ti-receipt" aria-hidden="true"></i></div>
+            <div class="activity-text">Invoice #INV-2847 auto-generated for <strong>Orbit Labs</strong><span>5 hours ago · $79.00 due Jul 1</span></div>
+            <div class="badge badge-success">Sent</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLANS -->
+      <div class="panel" id="panel-plans">
+        <div class="plans-grid">
+          <div class="plan-card">
+            <div class="plan-name">Starter</div>
+            <div class="plan-price">$19<span>/mo</span></div>
+            <div class="plan-desc">For individuals and small teams just getting started.</div>
+            <ul class="plan-features">
+              <li><i class="ti ti-check" aria-hidden="true"></i>Up to 3 users</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>10 GB storage</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>Basic analytics</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>Email support</li>
+            </ul>
+            <div class="sub-bar"><div class="sub-bar-fill" style="width:35%;background:#1D9E75"></div></div>
+            <div class="plan-subs"><i class="ti ti-users" style="font-size:13px" aria-hidden="true"></i><strong>449</strong> active subscribers</div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="sendPrompt('How do I edit the Starter plan pricing in SubFlow? ↗')">Edit plan ↗</button>
+            </div>
+          </div>
+          <div class="plan-card featured">
+            <div class="plan-badge">Most popular</div>
+            <div class="plan-name">Pro</div>
+            <div class="plan-price">$79<span>/mo</span></div>
+            <div class="plan-desc">For growing teams who need more power and integrations.</div>
+            <ul class="plan-features">
+              <li><i class="ti ti-check" aria-hidden="true"></i>Up to 25 users</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>100 GB storage</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>Advanced analytics</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>Priority support</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>API access</li>
+            </ul>
+            <div class="sub-bar"><div class="sub-bar-fill" style="width:70%"></div></div>
+            <div class="plan-subs"><i class="ti ti-users" style="font-size:13px" aria-hidden="true"></i><strong>694</strong> active subscribers</div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="sendPrompt('How do I edit the Pro plan in SubFlow and set usage limits? ↗')">Edit plan ↗</button>
+            </div>
+          </div>
+          <div class="plan-card">
+            <div class="plan-name">Enterprise</div>
+            <div class="plan-price">$349<span>/mo</span></div>
+            <div class="plan-desc">Custom contracts, SSO, and dedicated infrastructure.</div>
+            <ul class="plan-features">
+              <li><i class="ti ti-check" aria-hidden="true"></i>Unlimited users</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>1 TB storage</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>Custom dashboards</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>SSO & SAML</li>
+              <li><i class="ti ti-check" aria-hidden="true"></i>Dedicated support</li>
+            </ul>
+            <div class="sub-bar"><div class="sub-bar-fill" style="width:15%;background:#533AB7"></div></div>
+            <div class="plan-subs"><i class="ti ti-users" style="font-size:13px" aria-hidden="true"></i><strong>141</strong> active subscribers</div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="sendPrompt('How do I configure Enterprise plan custom pricing in SubFlow? ↗')">Edit plan ↗</button>
+            </div>
+          </div>
+        </div>
+        <div class="full-card">
+          <div class="card-head">
+            <div class="card-title">Stripe integration status</div>
+            <span class="badge badge-success"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i> Connected</span>
+          </div>
+          <table>
+            <thead><tr><th>Product</th><th>Stripe Price ID</th><th>Interval</th><th>Status</th><th>Last synced</th></tr></thead>
+            <tbody>
+              <tr><td>Starter</td><td style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary)">price_1O9bXe...</td><td>Monthly</td><td><span class="badge badge-success">Active</span></td><td>2 min ago</td></tr>
+              <tr><td>Pro</td><td style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary)">price_1O9bYf...</td><td>Monthly</td><td><span class="badge badge-success">Active</span></td><td>2 min ago</td></tr>
+              <tr><td>Enterprise</td><td style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary)">price_1O9bZg...</td><td>Annual</td><td><span class="badge badge-success">Active</span></td><td>2 min ago</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUBSCRIBERS -->
+      <div class="panel" id="panel-subscribers">
+        <div class="search-bar"><i class="ti ti-search" aria-hidden="true"></i>Search subscribers by name, email, or plan…</div>
+        <div class="filter-row">
+          <button class="filter-chip active">All (1,284)</button>
+          <button class="filter-chip">Active (1,184)</button>
+          <button class="filter-chip">Trial (66)</button>
+          <button class="filter-chip">Past due (14)</button>
+          <button class="filter-chip">Cancelled (20)</button>
+        </div>
+        <div class="full-card" style="padding:0">
+          <table style="margin:0">
+            <thead style="padding:0 16px"><tr><th style="padding-left:16px">Subscriber</th><th>Plan</th><th>MRR</th><th>Status</th><th>Next billing</th><th style="padding-right:16px">Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td style="padding-left:16px"><strong>Priya Sharma</strong><div style="font-size:11px;color:var(--color-text-secondary)">priya@example.com</div></td>
+                <td><span class="badge badge-info">Pro</span></td><td>$79</td>
+                <td><span class="badge badge-success">Active</span></td><td>Jul 5</td>
+                <td style="padding-right:16px"><button class="btn" style="font-size:11px;padding:4px 10px" onclick="sendPrompt('How do I upgrade Priya Sharma to an Enterprise plan in SubFlow? ↗')">Manage ↗</button></td>
+              </tr>
+              <tr>
+                <td style="padding-left:16px"><strong>DataNest Inc.</strong><div style="font-size:11px;color:var(--color-text-secondary)">billing@datanest.io</div></td>
+                <td><span class="badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">Enterprise</span></td><td>$349</td>
+                <td><span class="badge badge-success">Active</span></td><td>Jul 18</td>
+                <td style="padding-right:16px"><button class="btn" style="font-size:11px;padding:4px 10px">Manage</button></td>
+              </tr>
+              <tr>
+                <td style="padding-left:16px"><strong>Marcus O.</strong><div style="font-size:11px;color:var(--color-text-secondary)">marcus@startup.co</div></td>
+                <td><span class="badge badge-success">Starter</span></td><td>$19</td>
+                <td><span class="badge badge-warning">Past due</span></td><td>Jun 28</td>
+                <td style="padding-right:16px"><button class="btn" style="font-size:11px;padding:4px 10px" onclick="sendPrompt('What happens when Stripe retries a failed payment for a subscriber? ↗')">Retry ↗</button></td>
+              </tr>
+              <tr>
+                <td style="padding-left:16px"><strong>Orbit Labs</strong><div style="font-size:11px;color:var(--color-text-secondary)">ops@orbitlabs.com</div></td>
+                <td><span class="badge badge-info">Pro</span></td><td>$79</td>
+                <td><span class="badge badge-success">Active</span></td><td>Jul 1</td>
+                <td style="padding-right:16px"><button class="btn" style="font-size:11px;padding:4px 10px">Manage</button></td>
+              </tr>
+              <tr>
+                <td style="padding-left:16px"><strong>Lena Park</strong><div style="font-size:11px;color:var(--color-text-secondary)">lena.p@gmail.com</div></td>
+                <td><span class="badge badge-success">Starter</span></td><td>—</td>
+                <td><span class="badge badge-danger">Cancelled</span></td><td>—</td>
+                <td style="padding-right:16px"><button class="btn" style="font-size:11px;padding:4px 10px" onclick="sendPrompt('How do I re-engage a cancelled subscriber in SubFlow? ↗')">Win back ↗</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- INVOICES -->
+      <div class="panel" id="panel-invoices">
+        <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="metric-card">
+            <div class="metric-label">Collected this month</div>
+            <div class="metric-value">$79,841</div>
+            <div class="metric-delta up">94.7% collection rate</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Outstanding</div>
+            <div class="metric-value">$4,479</div>
+            <div class="metric-delta down">14 invoices overdue</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Auto-generated</div>
+            <div class="metric-value">1,156</div>
+            <div class="metric-delta up">via Stripe webhooks</div>
+          </div>
+        </div>
+        <div class="full-card" style="padding:0">
+          <table>
+            <thead><tr><th style="padding-left:16px">Invoice</th><th>Customer</th><th>Amount</th><th>Plan</th><th>Status</th><th style="padding-right:16px">Date</th></tr></thead>
+            <tbody>
+              <tr><td style="padding-left:16px;font-family:var(--font-mono);font-size:12px">INV-2851</td><td>DataNest Inc.</td><td>$349.00</td><td>Enterprise</td><td><span class="badge badge-success">Paid</span></td><td style="padding-right:16px;font-size:12px;color:var(--color-text-secondary)">Jun 25</td></tr>
+              <tr><td style="padding-left:16px;font-family:var(--font-mono);font-size:12px">INV-2850</td><td>Orbit Labs</td><td>$79.00</td><td>Pro</td><td><span class="badge badge-success">Paid</span></td><td style="padding-right:16px;font-size:12px;color:var(--color-text-secondary)">Jun 24</td></tr>
+              <tr><td style="padding-left:16px;font-family:var(--font-mono);font-size:12px">INV-2849</td><td>Marcus O.</td><td>$19.00</td><td>Starter</td><td><span class="badge badge-warning">Overdue</span></td><td style="padding-right:16px;font-size:12px;color:var(--color-text-secondary)">Jun 20</td></tr>
+              <tr><td style="padding-left:16px;font-family:var(--font-mono);font-size:12px">INV-2848</td><td>Priya Sharma</td><td>$79.00</td><td>Pro</td><td><span class="badge badge-success">Paid</span></td><td style="padding-right:16px;font-size:12px;color:var(--color-text-secondary)">Jun 18</td></tr>
+              <tr><td style="padding-left:16px;font-family:var(--font-mono);font-size:12px">INV-2847</td><td>Steelcase Co.</td><td>$349.00</td><td>Enterprise</td><td><span class="badge badge-info">Sent</span></td><td style="padding-right:16px;font-size:12px;color:var(--color-text-secondary)">Jun 25</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="panel" id="panel-analytics">
+        <div class="analytics-row">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Subscriber growth</div></div>
+            <div style="position:relative;height:200px">
+              <canvas id="growthChart" role="img" aria-label="Bar chart of new subscribers per month, January through June 2026.">Jan 92, Feb 104, Mar 118, Apr 131, May 147, Jun 161.</canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Upgrade funnel</div></div>
+            <div style="position:relative;height:200px">
+              <canvas id="funnelChart" role="img" aria-label="Horizontal bar chart showing conversion funnel from trial to paid subscriptions.">Trial 340, Converted 211, Upgraded 89, Enterprise 42.</canvas>
+            </div>
+          </div>
+        </div>
+        <div class="usage-grid">
+          <div class="usage-item">
+            <div class="usage-item-label"><span>API calls (Jun)</span><span>8.2M / 10M</span></div>
+            <div class="usage-bar"><div class="usage-bar-fill" style="width:82%;background:#185FA5"></div></div>
+            <div class="usage-pct">82% capacity</div>
+          </div>
+          <div class="usage-item">
+            <div class="usage-item-label"><span>Storage used</span><span>341 GB / 500 GB</span></div>
+            <div class="usage-bar"><div class="usage-bar-fill" style="width:68%;background:#1D9E75"></div></div>
+            <div class="usage-pct">68% capacity</div>
+          </div>
+          <div class="usage-item">
+            <div class="usage-item-label"><span>Webhook events (Jun)</span><span>24,811 / 50K</span></div>
+            <div class="usage-bar"><div class="usage-bar-fill" style="width:50%;background:#533AB7"></div></div>
+            <div class="usage-pct">50% capacity</div>
+          </div>
+          <div class="usage-item">
+            <div class="usage-item-label"><span>Active sessions</span><span>412 / 2,000</span></div>
+            <div class="usage-bar"><div class="usage-bar-fill" style="width:21%;background:#BA7517"></div></div>
+            <div class="usage-pct">21% capacity</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:8px 0">
+          <button class="btn" onclick="sendPrompt('Give me a detailed usage analytics report for SubFlow including churn prediction ↗')">Generate full analytics report ↗</button>
+        </div>
+      </div>
+
+      <!-- ROLES -->
+      <div class="panel" id="panel-roles">
+        <div class="roles-grid">
+          <div class="role-card">
+            <div class="role-name"><i class="ti ti-shield" style="font-size:15px;color:#185FA5" aria-hidden="true"></i>Super Admin</div>
+            <div class="role-count">2</div>
+            <div class="role-perms">Full platform access · Billing · User mgmt · Settings</div>
+          </div>
+          <div class="role-card">
+            <div class="role-name"><i class="ti ti-settings" style="font-size:15px;color:#1D9E75" aria-hidden="true"></i>Admin</div>
+            <div class="role-count">5</div>
+            <div class="role-perms">Plans · Subscribers · Invoices · Analytics (read-only settings)</div>
+          </div>
+          <div class="role-card">
+            <div class="role-name"><i class="ti ti-chart-bar" style="font-size:15px;color:#533AB7" aria-hidden="true"></i>Analyst</div>
+            <div class="role-count">8</div>
+            <div class="role-perms">Analytics & reporting only · No billing access</div>
+          </div>
+          <div class="role-card">
+            <div class="role-name"><i class="ti ti-headset" style="font-size:15px;color:#BA7517" aria-hidden="true"></i>Support</div>
+            <div class="role-count">12</div>
+            <div class="role-perms">View subscribers · Create notes · No plan changes</div>
+          </div>
+          <div class="role-card">
+            <div class="role-name"><i class="ti ti-code" style="font-size:15px;color:#993C1D" aria-hidden="true"></i>Developer</div>
+            <div class="role-count">4</div>
+            <div class="role-perms">API keys · Webhooks · No financial data</div>
+          </div>
+          <div class="role-card" style="border:0.5px dashed var(--color-border-secondary);background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" onclick="sendPrompt('How do I create a custom role in SubFlow with specific permissions? ↗')">
+            <i class="ti ti-plus" style="font-size:22px;color:var(--color-text-tertiary);margin-bottom:6px" aria-hidden="true"></i>
+            <div style="font-size:12px;color:var(--color-text-secondary)">Create custom role ↗</div>
+          </div>
+        </div>
+        <div class="full-card">
+          <div class="card-head"><div class="card-title">Permission matrix</div></div>
+          <table style="font-size:12px">
+            <thead><tr><th>Permission</th><th>Super Admin</th><th>Admin</th><th>Analyst</th><th>Support</th><th>Developer</th></tr></thead>
+            <tbody>
+              <tr><td>View dashboard</td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td></tr>
+              <tr><td>Manage plans</td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td></tr>
+              <tr><td>View invoices</td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td></tr>
+              <tr><td>API key access</td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td></tr>
+              <tr><td>Manage team roles</td><td><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td><td><i class="ti ti-minus" style="color:var(--color-text-tertiary)" aria-hidden="true"></i></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head"><div class="card-title"><i class="ti ti-credit-card" style="font-size:15px;margin-right:6px" aria-hidden="true"></i>Stripe configuration</div></div>
+            <div style="margin-bottom:12px">
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:5px">Publishable key</div>
+              <div style="font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);padding:8px 10px;border-radius:var(--border-radius-md);color:var(--color-text-secondary)">pk_live_••••••••••••••••TZk8</div>
+            </div>
+            <div style="margin-bottom:14px">
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:5px">Webhook endpoint</div>
+              <div style="font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:8px 10px;border-radius:var(--border-radius-md);color:var(--color-text-secondary)">https://api.subflow.io/webhooks/stripe</div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px">
+              <span style="color:var(--color-text-secondary)">Test mode</span>
+              <div style="width:36px;height:20px;background:var(--color-background-secondary);border-radius:10px;border:0.5px solid var(--color-border-secondary)"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title"><i class="ti ti-mail" style="font-size:15px;margin-right:6px" aria-hidden="true"></i>Billing emails</div></div>
+            <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.7">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>Invoice sent</span><span class="badge badge-success">On</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>Payment failed</span><span class="badge badge-success">On</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>Subscription cancelled</span><span class="badge badge-success">On</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span>Trial ending (3 days)</span><span class="badge badge-success">On</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="full-card">
+          <div class="card-head"><div class="card-title">PostgreSQL database</div><span class="badge badge-success">Connected</span></div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px">
+            <div style="background:var(--color-background-secondary);padding:10px;border-radius:var(--border-radius-md)"><div style="color:var(--color-text-secondary);margin-bottom:4px">Tables</div><div style="font-weight:500;font-size:16px">24</div></div>
+            <div style="background:var(--color-background-secondary);padding:10px;border-radius:var(--border-radius-md)"><div style="color:var(--color-text-secondary);margin-bottom:4px">Records</div><div style="font-weight:500;font-size:16px">1.2M</div></div>
+            <div style="background:var(--color-background-secondary);padding:10px;border-radius:var(--border-radius-md)"><div style="color:var(--color-text-secondary);margin-bottom:4px">DB size</div><div style="font-weight:500;font-size:16px">4.8 GB</div></div>
+            <div style="background:var(--color-background-secondary);padding:10px;border-radius:var(--border-radius-md)"><div style="color:var(--color-text-secondary);margin-bottom:4px">Connections</div><div style="font-weight:500;font-size:16px">12/100</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const titles = {dashboard:'Dashboard',analytics:'Analytics',plans:'Plans & Pricing',subscribers:'Subscribers',invoices:'Invoices',roles:'Roles & Access',settings:'Settings'};
+const subs = {dashboard:'June 2026 · All plans',analytics:'Usage & growth metrics',plans:'Manage Stripe-connected plans',subscribers:'1,284 active subscribers',invoices:'Automated billing via Stripe',roles:'Role-based access control',settings:'Platform configuration'};
+
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('page-title').textContent = titles[id]||id;
+  document.getElementById('page-sub').textContent = subs[id]||'';
+}
+
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+const textColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.45)';
+
+new Chart(document.getElementById('mrrChart'), {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[{label:'MRR',data:[61200,65400,71000,75300,79100,84320],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.08)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#185FA5',borderWidth:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor,font:{size:11}}},y:{grid:{color:gridColor},ticks:{color:textColor,font:{size:11},callback:v=>'$'+Math.round(v/1000)+'k'}}}}
+});
+
+new Chart(document.getElementById('planChart'), {
+  type:'doughnut',
+  data:{
+    labels:['Pro','Starter','Enterprise'],
+    datasets:[{data:[54,28,18],backgroundColor:['#185FA5','#1D9E75','#533AB7'],borderWidth:0,hoverOffset:4}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false}}}
+});
+
+new Chart(document.getElementById('growthChart'), {
+  type:'bar',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[{label:'New subscribers',data:[92,104,118,131,147,161],backgroundColor:'#185FA5',borderRadius:4,borderSkipped:false}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:textColor,font:{size:11}}},y:{grid:{color:gridColor},ticks:{color:textColor,font:{size:11}}}}}
+});
+
+new Chart(document.getElementById('funnelChart'), {
+  type:'bar',
+  data:{
+    labels:['Trial','Converted','Upgraded','Enterprise'],
+    datasets:[{label:'Users',data:[340,211,89,42],backgroundColor:['#E6F1FB','#B5D4F4','#378ADD','#185FA5'],borderRadius:4,borderSkipped:false}]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor,font:{size:11}}},y:{grid:{display:false},ticks:{color:textColor,font:{size:11}}}}}
+});
+</script>
